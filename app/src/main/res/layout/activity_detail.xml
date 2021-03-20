@@ -8,9 +8,9 @@
     tools:context=".ui.DetailActivity">
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/idImgBack"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,17 +48,36 @@
             app:layout_constraintTop_toBottomOf="@+id/txtDetailNama" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ID_Detail_Img"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="30dp"
+        android:outlineSpotShadowColor="@color/black"
         android:layout_marginStart="30dp"
         android:layout_marginTop="44dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_background" />
+<LinearLayout
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintEnd_toEndOf="parent"
+android:padding="10dp"
+    android:background="@drawable/rounded_corner"
+    app:layout_constraintTop_toTopOf="parent">
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_shopping_basket_24"
+        android:contentDescription="TODO" />
+</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
