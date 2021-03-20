@@ -20,6 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:text="TextView"
+        android:textStyle="bold"
+        android:textSize="20dp"
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/txtDescription"
         app:layout_constraintStart_toEndOf="@+id/ID_ImgAdapter"
