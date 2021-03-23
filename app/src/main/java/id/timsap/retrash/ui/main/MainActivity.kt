@@ -1,7 +1,9 @@
 package id.timsap.retrash.ui.main
 
+
 import android.R.attr
 import android.R.attr.bitmap
+
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -12,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -20,6 +23,7 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import id.timsap.retrash.R
+import id.timsap.retrash.model.Prediction
 import id.timsap.retrash.model.Travel
 import id.timsap.retrash.retofit.Network
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,18 +33,16 @@ import kotlinx.coroutines.async
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStream
 import java.util.*
 
 
-val REQUEST_IMAGE_CAPTURE = 101
 private const val REQUEST_CODE = 42
 const val FILE_NAME = "photo.jpg"
 lateinit var photoFile: File
-var selectedPhotoUri: Uri? = null
+private var postPath: String? = null
+private var encode_image = "0"
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,12 +54,12 @@ class MainActivity : AppCompatActivity() {
             peekHeight = 300
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        GlobalScope.async {
-            setUpCamera()
-        }
+
+        setUpCamera()
+
 
         //mengambil data rekomendasi
-
+//        getDataRekomendasi()
 
     }
 
@@ -91,7 +93,6 @@ class MainActivity : AppCompatActivity() {
             FileProvider.getUriForFile(this, "edu.stanford,rkpandey.fileprovider", photoFile)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider)
         if (takePictureIntent.resolveActivity(this.packageManager) != null) {
-
             startActivityForResult(takePictureIntent, REQUEST_CODE)
         } else {
             Toast.makeText(this, "Unable to open camera", Toast.LENGTH_SHORT).show()
@@ -106,22 +107,59 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val uri: Uri
+
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            val bitmap: Bitmap
-            selectedPhotoUri = data?.data
-            Log.d("BitMap", selectedPhotoUri.toString())
 
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
-
             imgMainActivity.visibility = View.VISIBLE
-            Log.d("BitMap", takenImage.toString())
+
             imgMainActivity.setImageBitmap(takenImage)
-            getDataRekomendasi()
+            encode_image = encodeTobase64(takenImage)
+            Log.d("Encode", encode_image)
+            uploadFile()
+
+        }else{
+            Log.d("Request","Fail Request")
         }
     }
 
+    private fun uploadFile() {
+            val params = HashMap<String, String>()
+            params["file"] = encode_image
+            GlobalScope.async {
+                Network().getService().postFoto(params).enqueue(object :
+                    Callback<Prediction> {
+                    override fun onResponse(
+                        call: Call<Prediction>,
+                        response: Response<Prediction>
+                    ) {
+                            if (response.body() != null) {
+                                val serverResponse = response.body()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "halo " + serverResponse?.prediction,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                Log.d("ResponseSuccess", response.body().toString())
+                                Log.d("ResponseSuccess", "Berhasil")
+                            }else{
+                                Log.d("ResponseSuccess", "Belum Berhasil")
+                            }
 
+                    }
+
+                    override fun onFailure(call: Call<Prediction>, t: Throwable) {
+                        Log.d("ResponseFailed", t.localizedMessage)
+                        Toast.makeText(
+                            applicationContext,
+                            "problem uploading image",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+            }
+
+    }
 
 
     override fun onRequestPermissionsResult(
@@ -131,4 +169,17 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+    fun encodeTobase64(image: Bitmap): String {
+        val imageEncoded: String
+        val baos = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        Bitmap.createScaledBitmap(image, 250, 600, false)
+        val byte_arr = baos.toByteArray()
+
+        // Encode Image to String
+        imageEncoded = Base64.encodeToString(byte_arr, 0)
+        return imageEncoded
+    }
 }
+
