@@ -1,26 +1,27 @@
 package id.timsap.retrash.ui.main
 
-import android.Manifest
+import android.R.attr
+import android.R.attr.bitmap
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import id.timsap.retrash.R
 import id.timsap.retrash.model.Travel
 import id.timsap.retrash.retofit.Network
-import id.timsap.retrash.ui.main.MainAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sheet.*
 import kotlinx.coroutines.GlobalScope
@@ -29,11 +30,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
+import java.util.*
+
 
 val REQUEST_IMAGE_CAPTURE = 101
 private const val REQUEST_CODE = 42
 const val FILE_NAME = "photo.jpg"
 lateinit var photoFile: File
+var selectedPhotoUri: Uri? = null
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,25 +57,29 @@ class MainActivity : AppCompatActivity() {
         }
 
         //mengambil data rekomendasi
-        GlobalScope.async {
-            getDataRekomendasi()
-        }
+
 
     }
 
     fun getDataRekomendasi() {
+        simmer_view.startShimmer()
+
         Network().getService().getCategory("1").enqueue(object : Callback<List<Travel>> {
+
             override fun onResponse(call: Call<List<Travel>>, response: Response<List<Travel>>) {
                 Log.d("Data", response.body().toString())
                 Log.d("Data", "Berhasil")
                 recyclerViewMain.layoutManager = LinearLayoutManager(MainActivity())
                 recyclerViewMain.adapter = MainAdapter(this@MainActivity, response.body())
+                simmer_view.stopShimmer()
+                simmer_view.visibility = View.GONE
             }
 
             override fun onFailure(call: Call<List<Travel>>, t: Throwable) {
                 Log.d("Data", t.localizedMessage)
             }
         })
+
     }
 
     fun setUpCamera() {
@@ -92,16 +103,25 @@ class MainActivity : AppCompatActivity() {
         return File.createTempFile(fileName, ".jpg", stroageDir)
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val uri: Uri
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val bitmap: Bitmap
+            selectedPhotoUri = data?.data
+            Log.d("BitMap", selectedPhotoUri.toString())
 
-//            val takenImage = data?.extras?.get("data") as Bitmap
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
+
             imgMainActivity.visibility = View.VISIBLE
+            Log.d("BitMap", takenImage.toString())
             imgMainActivity.setImageBitmap(takenImage)
+            getDataRekomendasi()
         }
     }
+
+
 
 
     override fun onRequestPermissionsResult(
