@@ -1,9 +1,16 @@
 package id.timsap.retrash.ui.main
 
+
+import android.R.attr
+import android.R.attr.bitmap
+
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -23,22 +30,19 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.sheet.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 
 
-val REQUEST_IMAGE_CAPTURE = 101
 private const val REQUEST_CODE = 42
 const val FILE_NAME = "photo.jpg"
 lateinit var photoFile: File
 private var postPath: String? = null
-
 private var encode_image = "0"
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,30 +54,34 @@ class MainActivity : AppCompatActivity() {
             peekHeight = 300
             this.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        GlobalScope.async {
-            setUpCamera()
-        }
+
+        setUpCamera()
+
 
         //mengambil data rekomendasi
-        GlobalScope.async {
-            getDataRekomendasi()
-        }
+//        getDataRekomendasi()
 
     }
 
     fun getDataRekomendasi() {
+        simmer_view.startShimmer()
+
         Network().getService().getCategory("1").enqueue(object : Callback<List<Travel>> {
+
             override fun onResponse(call: Call<List<Travel>>, response: Response<List<Travel>>) {
                 Log.d("Data", response.body().toString())
                 Log.d("Data", "Berhasil")
                 recyclerViewMain.layoutManager = LinearLayoutManager(MainActivity())
                 recyclerViewMain.adapter = MainAdapter(this@MainActivity, response.body())
+                simmer_view.stopShimmer()
+                simmer_view.visibility = View.GONE
             }
 
             override fun onFailure(call: Call<List<Travel>>, t: Throwable) {
                 Log.d("Data", t.localizedMessage)
             }
         })
+
     }
 
     fun setUpCamera() {
@@ -96,26 +104,28 @@ class MainActivity : AppCompatActivity() {
         return File.createTempFile(fileName, ".jpg", stroageDir)
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+
             val takenImage = BitmapFactory.decodeFile(photoFile.absolutePath)
             imgMainActivity.visibility = View.VISIBLE
+
             imgMainActivity.setImageBitmap(takenImage)
             encode_image = encodeTobase64(takenImage)
+            Log.d("Encode", encode_image)
             uploadFile()
+
+        }else{
+            Log.d("Request","Fail Request")
         }
     }
 
     private fun uploadFile() {
-        if (postPath == null || postPath == "") {
-            Toast.makeText(this, "please select an image ", Toast.LENGTH_LONG).show()
-            return
-        } else {
-
             val params = HashMap<String, String>()
             params["file"] = encode_image
-
             GlobalScope.async {
                 Network().getService().postFoto(params).enqueue(object :
                     Callback<Prediction> {
@@ -123,7 +133,6 @@ class MainActivity : AppCompatActivity() {
                         call: Call<Prediction>,
                         response: Response<Prediction>
                     ) {
-                        if (response.isSuccessful) {
                             if (response.body() != null) {
                                 val serverResponse = response.body()
                                 Toast.makeText(
@@ -131,20 +140,16 @@ class MainActivity : AppCompatActivity() {
                                     "halo " + serverResponse?.prediction,
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                Log.d("Data2", response.body().toString())
-                                Log.d("Data2", "Berhasil")
+                                Log.d("ResponseSuccess", response.body().toString())
+                                Log.d("ResponseSuccess", "Berhasil")
+                            }else{
+                                Log.d("ResponseSuccess", "Belum Berhasil")
                             }
-                        } else {
-                            Toast.makeText(
-                                applicationContext,
-                                "problem uploading image",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+
                     }
 
                     override fun onFailure(call: Call<Prediction>, t: Throwable) {
-                        Log.d("Data2", t.localizedMessage)
+                        Log.d("ResponseFailed", t.localizedMessage)
                         Toast.makeText(
                             applicationContext,
                             "problem uploading image",
@@ -153,8 +158,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
             }
-        }
+
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

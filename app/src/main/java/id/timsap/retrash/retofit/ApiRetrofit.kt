@@ -2,11 +2,10 @@ package id.timsap.retrash.retofit
 
 
 import id.timsap.retrash.ModelType
-import id.timsap.retrash.model.Prediction
 import id.timsap.retrash.model.Travel
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
+import id.timsap.retrash.model.Prediction
 import java.util.*
 
 
@@ -22,5 +21,6 @@ interface ApiRetrofit {
  fun postFoto(
   @FieldMap params: HashMap<String, String>
  ): Call<Prediction>
+
 
 }

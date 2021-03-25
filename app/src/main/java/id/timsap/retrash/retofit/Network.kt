@@ -17,7 +17,7 @@ class Network {
     }
     fun getRetrofit() : Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://136.243.47.204:11180/")
+            .baseUrl("http://136.243.47.204:11181/")
             .client(getInterceptor())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
