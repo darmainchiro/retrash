@@ -4,20 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.mainactivity.MainActivity">
 
+    <TextView
+        android:id="@+id/txtTap"
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:text="Tap To Start Camera"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imgMainActivity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <ImageView
         android:id="@+id/imgMainActivity"
         android:layout_width="match_parent"
-
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
+        app:layout_constraintTop_toTopOf="parent"/>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/Id_Layout_Bottom"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
   <include layout="@layout/sheet"/>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

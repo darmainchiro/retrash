@@ -1,4 +1,4 @@
-package id.timsap.retrash.ui
+package id.timsap.retrash.ui.detailactivity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +9,8 @@ import id.timsap.retrash.ModelType
 import id.timsap.retrash.R
 import id.timsap.retrash.model.Travel
 import id.timsap.retrash.retofit.Network
-import id.timsap.retrash.ui.main.MainActivity
-import id.timsap.retrash.ui.main.MainAdapter
+import id.timsap.retrash.ui.mainactivity.MainAdapter
+import id.timsap.retrash.ui.mapsactivity.MapsActivity
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -24,21 +24,24 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         travel = intent.getParcelableExtra<Travel>(MainAdapter.TAG)
-        getDataDetail()
+
         txtDetailNama.text = travel?.name_solusi
         txtDetailDescription.text = travel?.description
         idImgBack.setOnClickListener {
-            val intent = Intent(this,MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
         Picasso.get().load(travel?.gambar)
             .into(ID_Detail_Img)
+        imageView2.setOnClickListener {
+            val intent = Intent(this,MapsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
     fun getDataDetail() {
         GlobalScope.async {
-            Network().getService().getData("1").enqueue(object : Callback<ModelType> {
+            Network().getServiceData().getData("1").enqueue(object : Callback<ModelType> {
                 override fun onResponse(
                     call: Call<ModelType>,
                     response: Response<ModelType>

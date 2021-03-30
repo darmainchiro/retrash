@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.animation.AnimationUtils
 import id.timsap.retrash.R
-import id.timsap.retrash.ui.Dashboard
+import id.timsap.retrash.ui.dashboardactivity.Dashboard
 import kotlinx.android.synthetic.main.activity_splash.*
 
 class SplashActivity : AppCompatActivity() {

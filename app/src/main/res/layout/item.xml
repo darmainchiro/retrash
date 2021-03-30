@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/ID_ImgAdapter"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_background" />
@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:text="TextView"
+
         android:textStyle="bold"
         android:textSize="20dp"
         android:textColor="@color/black"
@@ -29,14 +30,18 @@
 
     <TextView
         android:id="@+id/txtDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginEnd="5dp"
         android:maxWidth="200dp"
-        android:maxLines="5"
+        android:maxLines="4"
+        android:ellipsize="end"
+        android:justificationMode="inter_word"
         android:text="Tas yang dibuat menggunakan kerajinan tangan ini pembuatannya sama saja dengan tas kerajinan tangan berbahan dasar kardus yang pernah kita bahas sebelumnya.\r\n\r\nKalau untuk pemakaiannya jangan terlalu berlebihan, karena tas ini mempunyai bahan kertas yang termasuk lebih mudah rusak. Maka daripada itu, memakai tas ini cuma untuk mengangkut benda-benda yang ringan seperti buku dan juga majalah"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ID_ImgAdapter"
         app:layout_constraintTop_toBottomOf="@+id/txtNamaSolusi" />
 
