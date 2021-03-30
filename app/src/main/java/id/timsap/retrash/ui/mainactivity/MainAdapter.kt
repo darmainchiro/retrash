@@ -1,4 +1,4 @@
-package id.timsap.retrash.ui.main
+package id.timsap.retrash.ui.mainactivity
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import id.timsap.retrash.ui.DetailActivity
+import id.timsap.retrash.ui.detailactivity.DetailActivity
 import id.timsap.retrash.model.Travel
 import id.timsap.retrash.R
 import kotlinx.android.synthetic.main.item.view.*

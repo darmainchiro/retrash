@@ -15,13 +15,23 @@ class Network {
             .build()
         return  okHttpClient
     }
-    fun getRetrofit() : Retrofit {
+    fun getRetrofitCamera() : Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://136.243.47.204:11181/")
             .client(getInterceptor())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    fun getService() = getRetrofit().create(ApiRetrofit::class.java)
+
+    fun getRetrofitData() : Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("http://136.243.47.204:11180/")
+            .client(getInterceptor())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    fun getServiceCamera() = getRetrofitCamera().create(ApiRetrofit::class.java)
+    fun getServiceData() = getRetrofitData().create(ApiRetrofit::class.java)
+
 }
 
